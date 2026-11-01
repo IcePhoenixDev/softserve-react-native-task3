@@ -4,6 +4,8 @@ import { useState } from 'react';
 // TODO: add the imports you need in each step (Modal, SafeAreaView from 'react-native-safe-area-context'...)
 import { View, Text, Image, Pressable, TextInput, Button, Alert, ScrollView, StyleSheet, Platform, Modal } from 'react-native';
 
+import { SafeAreaView } from 'react-native-safe-area-context';
+
 const COLORS = {
   background: '#EEF1F6',
   card: '#FFFFFF',
@@ -57,6 +59,8 @@ export default function App() {
   // TODO STEP 1: add the state that says if the modal is visible
   const [modalVisible, setModalVisible] = useState(false);
   // TODO STEP 4: add the state for the selected contacts (an array)
+  const [selectedContacts, setSelectedContacts] = useState([]);
+  const isShareDisabled = selectedContacts.length === 0;
 
   const followers = BASE_FOLLOWERS + (isFollowing ? 1 : 0);
   const isSendDisabled = message.trim().length === 0;
@@ -96,9 +100,21 @@ export default function App() {
   // TODO STEP 2: write closeModal
   function closeModal(){
     setModalVisible(false);
+    setSelectedContacts([]);
   }
   // TODO STEP 4: write handleContactPress and handleConfirmShare
-
+  function handleContactPress(name){
+    if(selectedContacts.includes(name) ){
+      setSelectedContacts(selectedContacts.filter((contact) =>  contact !== name));
+    } else {
+      setSelectedContacts ([...selectedContacts, name]);
+    }
+  } 
+  function handleConfirmShare(){
+    Alert.alert('Profile shared', selectedContacts.join(', '));
+    setModalVisible(false);
+    setSelectedContacts([]);
+  }
   // TODO STEP 5: wrap the whole screen in a SafeAreaView
   return (
     <ScrollView
@@ -253,13 +269,32 @@ export default function App() {
             <Text style={styles.sheetTitle}>Share profile</Text>
 
             <Text style={styles.sheetText}>
-              Share Alex's profile with your team</Text>
+              Choose who gets Alex's profile.</Text>
+
+            <ScrollView  style ={styles.contactList}>  
+              {CONTACTS.map((contact) => (
+                <Pressable key = {contact} style={styles.contactRow}
+                  onPress= {() => handleContactPress(contact)}
+                >
+                  <Text style = {styles.contactName}> {contact} </Text>
+                  
+                  {selectedContacts.includes(contact) ? (
+                  <Text>✓</Text>) : null}
+                </Pressable>
+              ))}
+            </ScrollView>
           <Pressable
             style={styles.sheetClose}
             onPress={closeModal}
-          >
+            >
             <Text style ={styles.sheetCloseText}>Close</Text>
             </Pressable>
+            <Pressable onPress={handleConfirmShare} disabled={isShareDisabled} style={styles.shareButton} >
+              <Text style= {styles.shareButtonText}> 
+                {selectedContacts.length === 0 ? 'Select contacts'
+                : `Share with ${selectedContacts.length} `}
+                 </Text>
+              </Pressable>
         </View>
         </View>
       </Modal>
@@ -282,7 +317,42 @@ const cardShadow = Platform.select({
 });
 
 const styles = StyleSheet.create({
-    sectionTitle: {
+  overlay: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 24,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  sheet: {
+    width: '100%',
+    maxWidth: 420,
+    padding: 20,
+    borderRadius: 20,
+    backgroundColor: COLORS.card,
+  },
+  sheetTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: COLORS.text,
+  },
+  sheetText: {
+    marginTop: 4,
+    marginBottom: 12,
+    fontSize: 14,
+    color: COLORS.muted,
+  },
+  sheetClose: {
+    marginTop: 8,
+    paddingVertical: 10,
+    alignItems: 'center',
+  },
+  sheetCloseText: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: COLORS.primary,
+  },
+  sectionTitle: {
     marginTop: 18,
     marginBottom: 10,
     fontSize: 12,
@@ -368,41 +438,6 @@ const styles = StyleSheet.create({
   safe: {
     flex: 1,
     backgroundColor: COLORS.background,
-  },
-    overlay: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 24,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-  },
-    sheet: {
-    width: '100%',
-    maxWidth: 420,
-    padding: 20,
-    borderRadius: 20,
-    backgroundColor: COLORS.card,
-  },
-  sheetTitle: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: COLORS.text,
-  },
-  sheetText: {
-    marginTop: 4,
-    marginBottom: 12,
-    fontSize: 14,
-    color: COLORS.muted,
-  },
-  sheetClose: {
-    marginTop: 8,
-    paddingVertical: 10,
-    alignItems: 'center',
-  },
-  sheetCloseText: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: COLORS.primary,
   },
   screen: {
     flex: 1,
