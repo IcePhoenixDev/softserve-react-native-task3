@@ -117,6 +117,7 @@ export default function App() {
   }
   // TODO STEP 5: wrap the whole screen in a SafeAreaView
   return (
+    <SafeAreaView style={styles.safe}>
     <ScrollView
       style={styles.screen}
       contentContainerStyle={styles.screenContent}
@@ -299,6 +300,7 @@ export default function App() {
         </View>
       </Modal>
     </ScrollView>
+    </SafeAreaView>
   );
 
 }
@@ -317,6 +319,9 @@ const cardShadow = Platform.select({
 });
 
 const styles = StyleSheet.create({
+  safe: {
+  flex: 1,
+},
   overlay: {
     flex: 1,
     justifyContent: 'center',
