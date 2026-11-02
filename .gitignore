@@ -1,0 +1,11 @@
+gitignore
+
+node_modules/
+dist/
+build/
+.env
+.env.*
+!.env.example
+npm-debug.log*
+.DS_Store
+README2.MD
